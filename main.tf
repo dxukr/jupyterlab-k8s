@@ -65,7 +65,8 @@ resource "kubernetes_deployment" "main" {
           name              = "jupyter"
           image             = local.image
           image_pull_policy = "Always"
-          command           = ["sh", "-c", var.init_script]
+          command = ["sh", "-c",
+          "${replace(local.initScript, "{INIT_SCRIPT}", var.init_script)}"]
           security_context {
             run_as_user = "1000"
           }

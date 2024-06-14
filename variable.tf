@@ -60,14 +60,15 @@ variable "domain" {
 }
 variable "init_script" {
   type    = string
-  default = <<-EOT
-    start-notebook.sh --NotebookApp.token=''  --NotebookApp.password=''
-    EOT
+  default = "git clone https://github.com/dxukr/jupyterlab-k8s.git"
 }
 locals {
 
   name       = "idp"
   mount_path = "/home/jovyan"
   image      = "registry.gitlab.com/dxi/repo/dxu-notebook:3.11_latest"
-
+  initScript = <<-EOT
+    {INIT_SCRIPT}
+    start-notebook.sh --NotebookApp.token=''  --NotebookApp.password=''
+    EOT
 }
