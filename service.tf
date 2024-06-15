@@ -41,7 +41,7 @@ resource "kubernetes_service" "main" {
 
 resource "kubernetes_ingress_v1" "main" {
   metadata {
-    name      = "dxu-${lower(var.owner)}-${lower(var.name)}"
+    name      = "idp-${lower(var.name)}"
     namespace = var.namespace
     annotations = {
       "kubernetes.io/ingress.class" = "traefik"
