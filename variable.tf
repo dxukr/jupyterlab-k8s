@@ -37,8 +37,7 @@ variable "workspace_id" {
 }
 
 variable "name" {
-  type    = string
-  default = "dxu-name"
+  type = string
 }
 
 variable "disk" {
