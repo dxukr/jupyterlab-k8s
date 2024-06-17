@@ -1,3 +1,16 @@
+/**
+idp 기본 파라미터.
+url
+owner
+owner_id
+namespace
+workspace
+workspace_id
+cpu
+memory
+disk
+init_script
+**/
 
 variable "use_kubeconfig" {
   type        = bool
@@ -27,17 +40,13 @@ variable "owner_id" {
   type    = string
   default = "onwer-id"
 }
-variable "workspace_name" {
+variable "workspace" {
   type    = string
   default = "worksapce-name"
 }
 variable "workspace_id" {
   type    = string
   default = "0001"
-}
-
-variable "name" {
-  type = string
 }
 
 variable "disk" {
@@ -52,9 +61,9 @@ variable "cpu" {
   type    = number
   default = 4
 }
-variable "domain" {
+variable "url" {
   type    = string
-  default = "k3s.kr"
+  default = "idp-unkown.k3s.kr"
 
 }
 variable "init_script" {
@@ -62,7 +71,6 @@ variable "init_script" {
   default = "git clone https://github.com/dxukr/jupyterlab-k8s.git"
 }
 locals {
-
   name       = "idp"
   mount_path = "/home/jovyan"
   image      = "registry.gitlab.com/dxi/repo/dxu-notebook:3.11_latest"

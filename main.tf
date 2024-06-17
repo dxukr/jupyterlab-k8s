@@ -21,16 +21,16 @@ resource "kubernetes_deployment" "main" {
   ]
   wait_for_rollout = false
   metadata {
-    name      = "dxu-${lower(var.owner)}-${lower(var.name)}"
+    name      = "idp-${lower(var.owner)}-${lower(var.workspace_id)}"
     namespace = var.namespace
     labels = {
-      "app"                        = "dxu-${lower(var.owner)}-${lower(var.name)}"
+      "app"                        = "dxu-${lower(var.owner)}-${lower(var.workspace_id)}"
       "app.kubernetes.io/name"     = "${local.name}"
-      "app.kubernetes.io/instance" = "${local.name}-${lower(var.owner)}-${lower(var.name)}"
+      "app.kubernetes.io/instance" = "${local.name}-${lower(var.owner)}-${lower(var.workspace_id)}"
       "app.kubernetes.io/part-of"  = local.name
       "kr.idp.resource"            = "true"
       "kr.idp.workspace.id"        = var.workspace_id
-      "kr.idp.workspace.name"      = var.workspace_name
+      "kr.idp.workspace.name"      = var.workspace
       "kr.idp.user.id"             = var.owner_id
       "kr.idp.user.username"       = var.owner
     }
@@ -41,7 +41,7 @@ resource "kubernetes_deployment" "main" {
     replicas = 1
     selector {
       match_labels = {
-        "app" = "dxu-${lower(var.owner)}-${lower(var.name)}"
+        "app" = "idp-${lower(var.owner)}-${lower(var.workspace_id)}"
       }
     }
     strategy {
@@ -51,7 +51,7 @@ resource "kubernetes_deployment" "main" {
     template {
       metadata {
         labels = {
-          "app"                    = "dxu-${lower(var.owner)}-${lower(var.name)}"
+          "app"                    = "idp-${lower(var.owner)}-${lower(var.workspace_id)}"
           "app.kubernetes.io/name" = local.name
         }
       }
@@ -119,6 +119,86 @@ resource "kubernetes_deployment" "main" {
   }
 }
 
+resource "kubernetes_service" "main" {
+  metadata {
+    name      = "idp-${lower(var.owner)}-${lower(var.workspace_id)}"
+    namespace = var.namespace
+  }
+
+  spec {
+    selector = {
+      "app" = "idp-${lower(var.owner)}-${lower(var.workspace_id)}"
+
+    }
+    port {
+      port        = 80
+      target_port = 8888
+    }
+
+    type = "ClusterIP"
+  }
+}
+
+
+
+resource "kubernetes_ingress_v1" "main" {
+  metadata {
+    name      = "idp-${lower(var.owner)}-${lower(var.workspace_id)}"
+    namespace = var.namespace
+    annotations = {
+      "kubernetes.io/ingress.class" = "traefik"
+    }
+
+  }
+  spec {
+    rule {
+      host = lower(var.url)
+      http {
+
+        path {
+          path = "/"
+          backend {
+            service {
+              name = kubernetes_service.main.metadata[0].name
+              port {
+                number = kubernetes_service.main.spec[0].port[0].port
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 
 /////////////////
+
+resource "kubernetes_persistent_volume_claim" "home" {
+  metadata {
+    name      = "idp-${lower(var.owner)}-${lower(var.workspace_id)}"
+    namespace = var.namespace
+    labels = {
+      "app.kubernetes.io/name"     = "idp-${lower(var.owner)}-${lower(var.workspace_id)}-pvc"
+      "app.kubernetes.io/instance" = "idp-${lower(var.owner)}-${lower(var.workspace_id)}"
+      "app.kubernetes.io/part-of"  = "idp-${lower(var.owner)}-${lower(var.workspace_id)}"
+      //Coder-specific labels.
+      "kr.idp.resource"      = "true"
+      "kr.idp.workspace.id"  = var.workspace_id
+      "kr.idp.workspace"     = var.workspace
+      "kr.idp.user.id"       = var.owner_id
+      "kr.idp.user.username" = var.owner
+    }
+  }
+  wait_until_bound = false
+  spec {
+    access_modes = ["ReadWriteOnce"]
+    resources {
+      requests = {
+        storage = "${var.disk}Gi"
+      }
+    }
+  }
+}
+
 
