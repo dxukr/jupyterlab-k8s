@@ -7,10 +7,10 @@ init:
 	terraform init
 
 plan: init
-	terraform plan -out ${NAME} 
+	terraform plan -out ${NAME}
 
 apply: plan
 	terraform apply "${NAME}"
 
 destroy:
-	terraform destroy  ${AUTO}
+	terraform destroy  ${AUTO} -target="kubernetes_ingress_v1.main"
