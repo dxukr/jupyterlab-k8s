@@ -199,6 +199,9 @@ resource "kubernetes_persistent_volume_claim" "home" {
       }
     }
   }
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 
