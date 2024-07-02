@@ -13,12 +13,6 @@ provider "kubernetes" {
   # config_path = "~/.kube/config"
 }
 
-resource "kubernetes_service_account" "example" {
-  metadata {
-    name      = "${local.name}-svc-account"
-    namespace = var.namespace
-  }
-}
 resource "kubernetes_deployment" "main" {
   count = 1
   depends_on = [
