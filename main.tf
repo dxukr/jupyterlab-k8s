@@ -9,8 +9,8 @@ terraform {
 }
 provider "kubernetes" {
   # Authenticate via ~/.kube/config or a Coder-specific ServiceAccount, depending on admin preferences
-  #   config_path = var.use_kubeconfig == true ? "~/.kube/config" : null
-  config_path = "~/.kube/config"
+  config_path = var.use_kubeconfig == true ? "~/.kube/config" : null
+  # config_path = "~/.kube/config"
 }
 
 resource "kubernetes_service_account" "example" {
