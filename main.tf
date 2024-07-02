@@ -59,7 +59,6 @@ resource "kubernetes_deployment" "main" {
           run_as_user = 1000
           fs_group    = 100
         }
-        service_account_name = "idp-account"
         container {
           name              = "jupyter"
           image             = local.image
