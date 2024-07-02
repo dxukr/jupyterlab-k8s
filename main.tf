@@ -13,7 +13,12 @@ provider "kubernetes" {
   config_path = "~/.kube/config"
 }
 
-
+resource "kubernetes_service_account" "example" {
+  metadata {
+    name      = "${local.name}-svc-account"
+    namespace = var.namespace
+  }
+}
 resource "kubernetes_deployment" "main" {
   count = 1
   depends_on = [
@@ -60,7 +65,7 @@ resource "kubernetes_deployment" "main" {
           run_as_user = 1000
           fs_group    = 100
         }
-
+        service_account_name = "idp-account"
         container {
           name              = "jupyter"
           image             = local.image
